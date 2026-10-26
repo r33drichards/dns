@@ -11,7 +11,7 @@ resource "aws_route53_record" "www" {
   name    = "www.${local.robw_fyi.domain_name}"
   type    = "CNAME"
   ttl     = 300
-  records = ["kkh7i7tgkl73.id.wasmer.app"]
+  records = ["wordpress-sm7xo.wasmer.app"]
 }
 
 resource "aws_acm_certificate" "robw_fyi" {
@@ -126,8 +126,11 @@ resource "aws_route53_record" "root_a" {
   zone_id = module.robw_fyi_dns.zone_id
   name    = local.robw_fyi.domain_name
   type    = "A"
-  ttl     = 300
-  records = ["5.161.23.223"]
+  alias {
+    name                   = aws_cloudfront_distribution.robw_fyi.domain_name
+    zone_id                = "Z2FDTNDATAQYW2"
+    evaluate_target_health = false
+  }
 }
 
 resource "aws_route53_record" "root_aaaa" {
