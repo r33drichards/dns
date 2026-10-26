@@ -6,6 +6,14 @@ module "robw_fyi_dns" {
 
 
 # DNS Records
+resource "aws_route53_record" "hooks" {
+  zone_id = module.robw_fyi_dns.zone_id
+  name    = "hooks.${local.robw_fyi.domain_name}"
+  type    = "A"
+  ttl     = 300
+  records = ["45.63.91.217"]
+}
+
 resource "aws_route53_record" "www" {
   zone_id = module.robw_fyi_dns.zone_id
   name    = "www.${local.robw_fyi.domain_name}"
