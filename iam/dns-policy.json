@@ -1,0 +1,107 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "route53:ChangeResourceRecordSets"
+      ],
+      "Resource": [
+        "arn:aws:route53:::hostedzone/Z07438401E30ZEQ6KJPLG",
+        "arn:aws:route53:::hostedzone/Z08951152DD6LNOZOXRJZ"
+      ],
+      "Condition": {
+        "ForAllValues:StringEquals": {
+          "route53:ChangeResourceRecordSetsRecordTypes": [
+            "A",
+            "AAAA",
+            "CNAME",
+            "TXT",
+            "MX",
+            "SRV",
+            "CAA",
+            "PTR",
+            "NAPTR"
+          ]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "route53:GetHostedZone",
+        "route53:ListResourceRecordSets",
+        "route53:ListTagsForResource"
+      ],
+      "Resource": [
+        "arn:aws:route53:::hostedzone/Z07438401E30ZEQ6KJPLG",
+        "arn:aws:route53:::hostedzone/Z08951152DD6LNOZOXRJZ"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": "route53:GetChange",
+      "Resource": "arn:aws:route53:::change/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "acm:DescribeCertificate",
+        "acm:ListTagsForCertificate"
+      ],
+      "Resource": "arn:aws:acm:us-east-1:390825964154:certificate/ee8cb3d1-4e04-4dfb-8b39-f568d0d1b505"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cloudfront:GetDistribution",
+        "cloudfront:ListTagsForResource"
+      ],
+      "Resource": "arn:aws:cloudfront::390825964154:distribution/E14T0GZ0LDBSIZ"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cloudfront:DescribeFunction",
+        "cloudfront:GetFunction"
+      ],
+      "Resource": "arn:aws:cloudfront::390825964154:function/robw-fyi-redirect"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::r33drichards-dns-tfstate-390825964154",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "dns/terraform.tfstate",
+            "dns/terraform.tfstate.tflock",
+            "env:/"
+          ]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": "s3:GetBucketLocation",
+      "Resource": "arn:aws:s3:::r33drichards-dns-tfstate-390825964154"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::r33drichards-dns-tfstate-390825964154/dns/terraform.tfstate"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::r33drichards-dns-tfstate-390825964154/dns/terraform.tfstate.tflock"
+    }
+  ]
+}

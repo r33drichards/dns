@@ -1,0 +1,27 @@
+# Local Terraform providers and state can contain credentials and private data.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.tfplan
+*.plan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Local secrets and OS files.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.DS_Store
+dns-plan.json
+publication/
+__pycache__/

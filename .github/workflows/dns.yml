@@ -1,0 +1,55 @@
+name: Manage DNS
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Plan only or apply the reviewed plan within this run
+        type: choice
+        options: [plan, apply]
+        default: plan
+permissions:
+  contents: read
+concurrency:
+  group: production-dns
+  cancel-in-progress: false
+jobs:
+  dns:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.5
+          terraform_wrapper: false
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::390825964154:role/github-dns
+          aws-region: us-east-1
+          allowed-account-ids: '390825964154'
+      - run: terraform init -input=false -lockfile=readonly
+      - run: terraform validate
+      - name: Require migrated state
+        run: |
+          terraform state list > /tmp/dns-resources
+          grep -Fx 'module.robw_fyi_dns.aws_route53_zone.domain' /tmp/dns-resources
+          grep -Fx 'module.flakery_xyz_dns.aws_route53_zone.domain' /tmp/dns-resources
+          if grep -q namecheap /tmp/dns-resources; then
+            echo 'Namecheap state migration is required.' >&2
+            exit 1
+          fi
+      - run: terraform plan -input=false -lock-timeout=5m -out=dns.tfplan
+      - name: Enforce DNS-only changes
+        run: |
+          terraform show -json dns.tfplan > dns-plan.json
+          python3 scripts/check_dns_plan.py dns-plan.json
+      - name: Apply saved plan
+        if: inputs.operation == 'apply'
+        run: terraform apply -input=false -lock-timeout=5m dns.tfplan
+      - name: Clean up plan files
+        if: always()
+        run: rm -f dns.tfplan dns-plan.json
